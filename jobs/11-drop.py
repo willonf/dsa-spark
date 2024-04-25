@@ -15,9 +15,11 @@ dados_dsa = [(("Patricia", "Freitas"), ["Python", "Rust", "C++"], ["Scala", "Rub
              (("Jon", "Carvalho"), ["C", "Python", "Typescript"], ["PHP", "Perl"], "AM", None),
              (("Joana", "Carvalho"), ["C", "Python", "Typescript"], ["PHP", "Perl"], "AM", "RS"),
              (("Nulice", "Nula"), ["C", "Python", "Typescript"], ["PHP", "Perl"], "AM", "RS"),
+             (("Nulice", "Nula"), ["C", "Python", "Typescript"], ["PHP", "Perl"], "AM", "RS"),
+             (("Nulice", "Nula"), ["C", "Python", "Typescript"], ["PHP", "Perl"], "AM", "RS"),
+             (None, None, None, None, None),
+             (('', ''), [''], [''], '', ''),
              (("Carlos", "Souza"), ["PHP", "Java"], ["Ruby", "Python"], "ES", "SC")]
-
-arrayCol = ArrayType(StringType(), False)
 
 schema = StructType([
     StructField(name="nome", nullable=True, dataType=StructType([
@@ -31,38 +33,13 @@ schema = StructType([
 ])
 
 df = spark.createDataFrame(dados_dsa, schema)
-# df.printSchema()
-# df.show(truncate=False)
-#
-# df.filter(f.col('estadoAnterior') == 'AM').show(truncate=False)
-# df.filter(df.estadoAtual == 'AM').show(truncate=False)
-# df.filter("estadoAtual == 'AM'").show(truncate=False)
-#
-# df.filter(f.col('estadoAnterior') != 'AM').show(truncate=False)
-# df.filter(df.estadoAnterior != 'AM').show(truncate=False)
-# df.filter(~(df.estadoAnterior == 'AM')).show(truncate=False)
-# df.filter("estadoAnterior <> 'AM'").show(truncate=False)
-#
-# lista_estados = ['AM', 'RJ']
-#
-# df.filter(df.estadoAnterior.isin(lista_estados)).show(truncate=False)
-# df.filter((df.estadoAnterior == 'AM') | (df.estadoAtual == 'RS')).show(truncate=False)
-#
-# df.filter(df.nome.primeiroNome.startswith('W')).show(truncate=False)
-# df.filter(df.nome.primeiroNome.endswith('a')).show(truncate=False)
-# df.filter(df.nome.primeiroNome == 'Willon').show(truncate=False)
 
-# df.filter(df.nome.primeiroNome.like('W%n')).show(truncate=False)
-# df.filter(df.nome.ultimoNome.rlike('(?i).*Carvalho$')).show(truncate=False)
+df.drop('estadoAtual').show(truncate=False)
 
-df.filter('estadoAtual is NULL').show(truncate=False)
-df.filter(df.estadoAtual.isNull()).show(truncate=False)
-df.filter(df.estadoAtual.isNotNull()).show(truncate=False)
+columns_to_drop = ('estadoAnterior', 'linguagemMenosUsada')
+df.drop(*columns_to_drop).show(truncate=False)
 
-df.createOrReplaceTempView("dados_dsa")
+df.dropna(how='any').show(truncate=False)
+df.dropna(how='all').show(truncate=False)
 
-spark.sql('SELECT * FROM dados_dsa WHERE estadoAtual is NULL').show(truncate=False)
-
-# Deletando registos onde o valor da coluna estado é NULO
-df.show(truncate=False)
-df.na.drop(subset=['estadoAtual']).show(truncate=False)
+df.dropDuplicates().show(truncate=False)
